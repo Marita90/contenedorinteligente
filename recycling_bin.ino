@@ -8,8 +8,8 @@ const char* password = "Francisco27";
 // Configuración de Twilio
 const char* twilio_host = "api.twilio.com";
 const int twilio_port = 443;
-const char* account_sid = "TU_ACCOUNT_SID"; // Reemplaza con tu SID de cuenta Twilio
-const char* auth_token = "TU_AUTH_TOKEN";   // Reemplaza con tu token de autenticación Twilio
+const char* account_sid = "AC73d796744de34018a1f3d7a3639eec4e"; //SID de cuenta Twilio
+const char* auth_token = "747aca2ae259315c3b1fdaa1b7fec845";   //token de autenticación Twilio
 const char* from_number = "whatsapp:+14155238886"; // Número proporcionado por Twilio
 const char* to_number = "whatsapp:+56986731126";
 
