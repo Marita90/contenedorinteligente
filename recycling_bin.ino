@@ -1,31 +1,29 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
+#include <ESP8266HTTPClient.h>
 
 // Configuración de red Wi-Fi
-const char* ssid = "aukanantu_2.4G";
-const char* password = "Francisco27";
+const char* ssid = "*******";   // Mi red wifi
+const char* password = "*******";  // Contraseña de mi red
 
-// Configuración de Twilio
-const char* twilio_host = "api.twilio.com";
-const int twilio_port = 443;
-const char* account_sid = "AC73d796744de34018a1f3d7a3639eec4e"; //SID de cuenta Twilio
-const char* auth_token = "747aca2ae259315c3b1fdaa1b7fec845";   //token de autenticación Twilio
-const char* from_number = "whatsapp:+14155238886"; // Número proporcionado por Twilio
-const char* to_number = "whatsapp:+56986731126";
+// Configuración de CallMeBot
+const char* callmebot_api_url = "https://api.callmebot.com/whatsapp.php?";
+const char* to_number = "+569********"; // Mi Whatsapp
+const char* callmebot_api_key = "******"; // API Key de CallMeBot
 
 // Configuración de sensor ultrasónico
-#define TRIGGER_PIN D1
-#define ECHO_PIN D2
-const int max_distance = 100; // En centímetros
-const int threshold_distance = max_distance * 0.25; // 25% de capacidad libre
+#define TRIGGER_PIN D5  // Pines de conexión
+#define ECHO_PIN D6
+const float max_distance = 54.3; // Distancia máxima de medición en cm
+const float threshold_distance = max_distance * 0.25; // 25% de la distancia máxima
 
-WiFiClientSecure client;
+WiFiClientSecure client;  // Cliente Wi-Fi seguro para HTTPS
 
 void setup() {
   Serial.begin(115200);
   pinMode(TRIGGER_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
-  
+
   // Conectar a Wi-Fi
   Serial.print("Conectando a WiFi...");
   WiFi.begin(ssid, password);
@@ -34,6 +32,11 @@ void setup() {
     Serial.print(".");
   }
   Serial.println("\nConectado a WiFi!");
+  Serial.print("Dirección IP: ");
+  Serial.println(WiFi.localIP());
+
+  // Deshabilitar verificación SSL (si el servidor no tiene un certificado SSL válido)
+  client.setInsecure();
 }
 
 long getDistance() {
@@ -44,24 +47,36 @@ long getDistance() {
   digitalWrite(TRIGGER_PIN, LOW);
 
   long duration = pulseIn(ECHO_PIN, HIGH);
-  long distance = (duration * 0.034) / 2;
+  long distance = (duration * 0.0343) / 2;  // 0.0343 es la velocidad del sonido en cm/us
   return distance;
 }
 
 void sendWhatsAppMessage() {
-  if (client.connect(twilio_host, twilio_port)) {
-    String message = "Contenedor al 75% de su capacidad, ¡es momento de vaciarlo!";
-    
-    String postData = "To=" + String(to_number) + "&From=" + String(from_number) + "&Body=" + message;
-    client.printf("POST /2010-04-01/Accounts/%s/Messages.json HTTP/1.1\r\n", account_sid);
-    client.printf("Host: %s\r\n", twilio_host);
-    client.printf("Authorization: Basic %s\r\n", base64::encode(String(account_sid) + ":" + auth_token).c_str());
-    client.printf("Content-Type: application/x-www-form-urlencoded\r\n");
-    client.printf("Content-Length: %d\r\n\r\n", postData.length());
-    client.print(postData);
-    Serial.println("Mensaje de alerta enviado");
+  String message = "Contenedor al 75% de su capacidad, ¡es momento de vaciarlo!"; // Colocar mensaje que se enviara a whatsapp
+  String encoded_message = "";  // Codificación de mensaje (por ejemplo, '%20' para espacio)
+  
+  // Codificar el mensaje para URL (espacios, caracteres especiales)
+  for (unsigned int i = 0; i < message.length(); i++) {
+    char c = message.charAt(i);
+    if (c == ' ') encoded_message += "%20";
+    else encoded_message += c;
   }
-  client.stop();
+
+  String api_url = String(callmebot_api_url) + "phone=" + to_number + "&text=" + encoded_message + "&apikey=" + callmebot_api_key;
+
+  Serial.println("URL Generada: " + api_url);
+
+  HTTPClient http;
+  http.begin(client, api_url);  // Usar client como primer argumento para la conexión HTTPS
+  int httpCode = http.GET();
+
+  if (httpCode > 0) {
+    Serial.println("Mensaje enviado correctamente: " + String(httpCode));
+  } else {
+    Serial.println("Error al enviar el mensaje: " + String(httpCode));
+  }
+
+  http.end();
 }
 
 void loop() {
@@ -69,6 +84,7 @@ void loop() {
   Serial.print("Distancia medida: ");
   Serial.println(distance);
   
+  // La alerta se envía cuando la distancia es menor al umbral, es decir, cuando el contenedor está más lleno
   if (distance < threshold_distance) {
     sendWhatsAppMessage();
     delay(3600000); // Esperar 1 hora antes de volver a medir
@@ -76,3 +92,4 @@ void loop() {
 
   delay(10000); // Medición cada 10 segundos
 }
+
