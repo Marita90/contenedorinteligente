@@ -46,12 +46,10 @@ El código para este proyecto se encuentra en el archivo `recycling_bin.ino`.
 Configuración
 
 1. Configura el archivo de código `recycling_bin.ino` con los siguientes datos:
-   - Nombre de la red Wi-Fi: `aukanantu_2.4G`
-   - Contraseña de la red Wi-Fi: `Francisco27`
-   - SID de la cuenta de Twilio: `AC73d796744de34018a1f3d7a3639eec4e`
-   - Token de autenticación de Twilio: `747aca2ae259315c3b1fdaa1b7fec845`
-   - Número de teléfono de Twilio: `whatsapp:+14155238886`
-   - Número de teléfono receptor: `whatsapp:+56986731126`
+   - Nombre de la red Wi-Fi: `*********`
+   - Contraseña de la red Wi-Fi: `*********`
+   - Api Callmebot: '*********'
+   - Número de teléfono receptor: `whatsapp:+569*********`
 
 
 
