@@ -1,5 +1,7 @@
 Contenedor de Reciclaje Inteligente
 
+Integrantes: Maritza Acuña, Camila Jerez, Manuel Lorca.
+
 Este proyecto es un contenedor de reciclaje inteligente que utiliza un sensor ultrasónico y un microcontrolador NodeMCU ESP8266 para monitorear el nivel de llenado del contenedor.
 Cuando el contenedor alcanza el 75% de su capacidad, envía una alerta de WhatsApp para que pueda vaciarse antes de llenarse por completo.
 
