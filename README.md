@@ -33,9 +33,10 @@ Optimizar el manejo de residuos y asegurarse de que el contenedor sea vaciado op
 
 Diagrama de Conexión
 
-- TRIG del HC-SR04 al pin D1 del NodeMCU.
-- ECHO del HC-SR04 al pin D2 del NodeMCU.
+- TRIG del HC-SR04 al pin D5 del NodeMCU.
+- ECHO del HC-SR04 al pin D6 del NodeMCU.
 - VCC y GND del HC-SR04 a 5V y GND del NodeMCU, respectivamente.
+  https://github.com/Marita90/contenedorinteligente/blob/main/Imagenes/circuit_image.png
 
 
 
